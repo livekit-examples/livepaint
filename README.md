@@ -4,6 +4,8 @@ This is an example project demonstrating how to build a realtime data app using 
 
 In this example, we build a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by an AI agent that oversees the whole game.
 
+See it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)
+
 ## Architecture
 
 ### Rooms & Participants

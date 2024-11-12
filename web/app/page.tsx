@@ -11,6 +11,7 @@ import { useState } from "react";
 import { WinnerWindow } from "@/components/WinnerWindow";
 import { useEffect } from "react";
 import { CustomPromptWindow } from "@/components/CustomPromptWindow";
+import { RoomAudioRenderer } from "@livekit/components-react";
 
 export default function Page() {
   return (
@@ -21,7 +22,7 @@ export default function Page() {
 }
 
 function Inner() {
-  const { connect, connectionState, disconnect, gameState, kickReason } =
+  const { connect, connectionState, disconnect, gameState, kickReason, room } =
     useGame();
   const [showHelp, setShowHelp] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
@@ -57,6 +58,8 @@ function Inner() {
             </div>
           </div>
 
+          {room && <RoomAudioRenderer />}
+
           {showWinnerModal && (
             <WinnerWindow onClose={() => setShowWinnerModal(false)} />
           )}
@@ -69,11 +72,7 @@ function Inner() {
         </div>
       ) : (
         <UrlRoomNameProvider>
-          <ConnectionForm
-            onConnect={connect}
-            connecting={connectionState === "connecting"}
-            kickReason={kickReason}
-          />
+          <ConnectionForm />
         </UrlRoomNameProvider>
       )}
     </main>

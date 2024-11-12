@@ -25,6 +25,7 @@ import {
   useLocalParticipant,
   useRoomInfo,
   useConnectionState,
+  RoomContext,
 } from "@livekit/components-react";
 
 export enum DifficultyLevel {
@@ -58,6 +59,8 @@ export interface GameContextType {
   updateDifficulty: (difficulty: DifficultyLevel) => void;
   localDrawing: PlayerDrawing;
   kickReason: string | undefined;
+  shouldEnableMicrophone: boolean;
+  setShouldEnableMicrophone: (enabled: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -89,6 +92,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
   const [kickReason, setKickReason] = useState<string | undefined>(undefined);
   const connectionState = useConnectionState(room);
+  const [shouldEnableMicrophone, setShouldEnableMicrophone] = useState(true);
 
   const disconnect = useCallback(() => {
     room.disconnect();
@@ -140,6 +144,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         );
       }
 
+      await room.localParticipant.setMicrophoneEnabled(shouldEnableMicrophone);
+
       for (const participant of Array.from(room.remoteParticipants.values())) {
         if (participant.kind === ParticipantKind.AGENT) {
           continue;
@@ -158,7 +164,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDrawings((prev) => new Map(prev).set(participant.identity, drawing));
       }
     },
-    [room, disconnect],
+    [room, disconnect, shouldEnableMicrophone],
   );
 
   const startGame = useCallback(
@@ -309,6 +315,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
   }, [localPlayer, disconnect, host]);
 
+  useEffect(() => {
+    if (room.state === ConnectionState.Connected) {
+      room.localParticipant.setMicrophoneEnabled(shouldEnableMicrophone);
+    }
+  }, [shouldEnableMicrophone, room]);
+
   return (
     <GameContext.Provider
       value={{
@@ -329,9 +341,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
         updateDifficulty,
         localDrawing,
         kickReason,
+        shouldEnableMicrophone,
+        setShouldEnableMicrophone,
       }}
     >
-      {children}
+      <RoomContext.Provider value={room}>{children}</RoomContext.Provider>
     </GameContext.Provider>
   );
 }

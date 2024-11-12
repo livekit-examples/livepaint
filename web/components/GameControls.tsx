@@ -15,6 +15,8 @@ export function GameControls({
     guesses,
     localPlayer,
     room,
+    shouldEnableMicrophone,
+    setShouldEnableMicrophone,
   } = useGame();
 
   return (
@@ -50,6 +52,15 @@ export function GameControls({
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
           </select>
+          <div className="flex flex-row gap-1">
+            <input
+              id="enableMicrophone"
+              type="checkbox"
+              checked={shouldEnableMicrophone}
+              onChange={(e) => setShouldEnableMicrophone(e.target.checked)}
+            />
+            <label htmlFor="enableMicrophone">Enable Microphone</label>
+          </div>
         </div>
         <div className="flex flex-col gap-1 shrink-0">
           {gameState.started ? (

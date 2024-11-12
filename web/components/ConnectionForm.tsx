@@ -6,9 +6,14 @@ import { HelpWindow } from "./HelpWindow";
 export interface ConnectionFormProps {
   onConnect: (playerName: string, roomName: string) => void;
   connecting: boolean;
+  kickReason?: string;
 }
 
-export function ConnectionForm({ onConnect, connecting }: ConnectionFormProps) {
+export function ConnectionForm({
+  onConnect,
+  connecting,
+  kickReason,
+}: ConnectionFormProps) {
   const [playerName, setPlayerName] = useState("");
   const { urlRoomName: roomName, setUrlRoomName: setRoomName } =
     useUrlRoomName();
@@ -63,6 +68,9 @@ export function ConnectionForm({ onConnect, connecting }: ConnectionFormProps) {
             {connecting ? "Connecting…" : "Connect"}
           </button>
         </section>
+        {kickReason && (
+          <div className="text-sm text-red-500 text-right">{kickReason}</div>
+        )}
       </div>
       {showHelp && <HelpWindow onClose={() => setShowHelp(false)} />}
     </div>

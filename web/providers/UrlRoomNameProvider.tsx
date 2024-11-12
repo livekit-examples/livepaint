@@ -50,15 +50,7 @@ export function UrlRoomNameProvider({ children }: { children: ReactNode }) {
     if (!loaded) return;
 
     let name = urlRoomName.trim();
-    if (name) {
-      window.location.hash = name;
-    } else {
-      history.pushState(
-        "",
-        "",
-        window.location.pathname + window.location.search,
-      );
-    }
+    window.location.hash = name;
   }, [urlRoomName, loaded]);
 
   return (

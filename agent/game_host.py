@@ -16,9 +16,16 @@ from prompts import PROMPTS, DifficultyLevel
 
 NO_GUESS = "NO GUESS"
 
+PARTICIPANT_LIMIT = 2
+
+
 class GameState:
     def __init__(
-        self, started: bool = False, difficulty: DifficultyLevel = "easy", prompt: str | None = None, winners: List[str] = []
+        self,
+        started: bool = False,
+        difficulty: DifficultyLevel = "easy",
+        prompt: str | None = None,
+        winners: List[str] = [],
     ):
         self.started = started
         self.difficulty = difficulty
@@ -61,13 +68,14 @@ class GameHost:
         self._drawings = {}
         self._guess_cache = GuessCache()
         self._last_guesses = {}
+        self._kick_tasks = set()
 
     async def connect(self):
         print("Starting game host agent")
         await self._ctx.connect()
         for participant in self._ctx.room.remote_participants.values():
-            self._register_player(participant)
-            await self._load_player_drawing(participant)
+            if self._register_player(participant):
+                await self._load_player_drawing(participant)
 
         self._ctx.room.local_participant.register_rpc_method(
             "host.start_game", self._start_game
@@ -98,11 +106,11 @@ class GameHost:
             return json.dumps({"started": False})
 
         payload = json.loads(data.payload)
-        
+
         prompt = payload.get("prompt")
         if not prompt:
             prompt = random.choice(PROMPTS[self._game_state.difficulty])
-        
+
         self._game_state = GameState(True, self._game_state.difficulty, prompt, [])
         await self._publish_game_state()
         self._judge_task = asyncio.create_task(self._run_judge_loop())
@@ -144,7 +152,9 @@ class GameHost:
                 self._last_guesses = guesses
                 await self._publish_guesses(guesses)
                 self._game_state.winners = await self._check_winners()
-                print("found %d winners" % len(self._game_state.winners))
+                if len(self._game_state.winners) > 0:
+                    self._game_state.started = False
+                    print("found %d winners" % len(self._game_state.winners))
                 await self._publish_game_state()
             except Exception as e:
                 print("Failed to check winners: %s" % e)
@@ -166,13 +176,26 @@ class GameHost:
                 )
             )
 
-    def _register_player(self, participant: rtc.Participant):
+    def _register_player(self, participant: rtc.Participant) -> bool:
         if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_AGENT:
-            return
-    
+            return False
+
+        if len(self._drawings) >= PARTICIPANT_LIMIT:
+            print(
+                "Reached participant limit, kicking new player %s"
+                % participant.identity
+            )
+            kick_task = asyncio.create_task(
+                self._kick_player(participant, "The room is full!")
+            )
+            self._kick_tasks.add(kick_task)
+            kick_task.add_done_callback(self._kick_tasks.discard)
+            return False
+
         print("Registering player %s" % participant.identity)
         self._drawings[participant.identity] = PlayerDrawing(participant.identity)
-        
+        return True
+    
     async def _load_player_drawing(self, participant: rtc.Participant):
         if participant.identity not in self._drawings:
             return
@@ -186,15 +209,42 @@ class GameHost:
         drawing_data = base64.b64decode(drawing_data_b64)
         for i in range(0, len(drawing_data), 8):
             drawing.add_line(Line.decode(drawing_data[i : i + 8]))
-        
-        print("Loaded drawing for player %s with %d lines" % (participant.identity, len(drawing.lines)))
+
+        print(
+            "Loaded drawing for player %s with %d lines"
+            % (participant.identity, len(drawing.lines))
+        )
+
+    async def _kick_player(self, participant: rtc.Participant, reason: str):
+        print("Kicking player %s" % participant.identity)
+        if participant.identity in self._drawings:
+            del self._drawings[participant.identity]
+
+        await self._ctx.room.local_participant.perform_rpc(
+            method="player.kick",
+            destination_identity=participant.identity,
+            payload=json.dumps({"reason": reason}),
+        )
+
+        async with aiohttp.ClientSession() as session:
+            await api.room_service.RoomService(
+                session,
+                os.getenv("LIVEKIT_URL"),
+                os.getenv("LIVEKIT_API_KEY"),
+                os.getenv("LIVEKIT_API_SECRET"),
+            ).remove_participant(
+                protocol.room.RoomParticipantIdentity(
+                    room=self._ctx.room.name, identity=participant.identity
+                )
+            )
 
     def _unregister_player(self, participant: rtc.Participant):
         if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_AGENT:
             return
 
         print("Unregistered player %s" % participant.identity)
-        del self._drawings[participant.identity]
+        if participant.identity in self._drawings:
+            del self._drawings[participant.identity]
 
     def _on_participant_connected(self, participant: rtc.Participant):
         self._register_player(participant)
@@ -206,7 +256,7 @@ class GameHost:
         if data.topic == "player.draw_line":
             if data.participant.identity not in self._drawings:
                 return
-            
+
             drawing = self._drawings[data.participant.identity]
             drawing.add_line(Line.decode(data.data))
         elif data.topic == "player.clear_drawing":

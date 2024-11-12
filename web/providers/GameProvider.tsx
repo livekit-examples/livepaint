@@ -57,6 +57,7 @@ export interface GameContextType {
   onClear: () => void;
   updateDifficulty: (difficulty: DifficultyLevel) => void;
   localDrawing: PlayerDrawing;
+  kickReason: string | undefined;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -86,7 +87,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [localDrawing, setLocalDrawing] = useState<PlayerDrawing>(
     new PlayerDrawing(),
   );
-
+  const [kickReason, setKickReason] = useState<string | undefined>(undefined);
   const connectionState = useConnectionState(room);
 
   const disconnect = useCallback(() => {
@@ -103,6 +104,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
         alert("Please enter your name and room name first");
         return;
       }
+
+      setKickReason(undefined);
 
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error("Connection timed out")), 15000);
@@ -285,6 +288,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
     };
   }, [localPlayer, localDrawing]);
 
+  useEffect(() => {
+    async function handleKick(data: RpcInvocationData) {
+      if (data.callerIdentity !== host?.identity) {
+        console.log("refusing to be kicked by", data.callerIdentity);
+        return "";
+      }
+
+      const payload = JSON.parse(data.payload);
+      console.log("getting kicked due to '%s'", payload.reason);
+      setKickReason(payload.reason);
+      setTimeout(() => {
+        disconnect();
+      }, 100);
+      return "";
+    }
+    localPlayer?.registerRpcMethod("player.kick", handleKick);
+    return () => {
+      localPlayer?.unregisterRpcMethod("player.kick");
+    };
+  }, [localPlayer, disconnect, host]);
+
   return (
     <GameContext.Provider
       value={{
@@ -304,6 +328,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         onClear,
         updateDifficulty,
         localDrawing,
+        kickReason,
       }}
     >
       {children}

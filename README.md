@@ -2,9 +2,11 @@
 
 This is an example project demonstrating how to build a realtime data app using LiveKit.
 
-In this example, we build a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by an AI agent that oversees the whole game.
+In this example, we build a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by an AI agent that oversees the whole game. 
 
-See it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)
+This example demonstrates the use of [data messages](https://docs.livekit.io/home/client/data/messages), [room metadata](https://docs.livekit.io/home/client/data/room-metadata/), [RPC](https://docs.livekit.io/home/client/data/rpc/), [participant management](https://docs.livekit.io/home/server/managing-participants/), and [token generation](https://docs.livekit.io/home/server/generating-tokens/), in a real-world app built on the LiveKit [JS SDK](https://github.com/livekit/client-sdk-js), [React Components](https://github.com/livekit/components-js), [Python agents SDK](https://github.com/livekit/agents), and [Python Server API](https://github.com/livekit/python-sdks).
+
+Try it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)!
 
 ## Architecture
 
@@ -13,6 +15,8 @@ See it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)
 Each game is hosted in a single [LiveKit room](https://docs.livekit.io/home/client/connect) where each player is a standard participant.  The room is reused between games, so the same group of players can complete multiple games back-to-back.
 
 Each room also contains a single [LiveKit agent](https://docs.livekit.io/agents) that handles game logic and serves as the realtime backend for the game.
+
+A player limit of 12 is enforced by the agent, which kicks any participant joining after that limit is reached.
 
 ### Game State
 

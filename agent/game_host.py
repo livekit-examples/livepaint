@@ -16,7 +16,7 @@ from prompts import PROMPTS, DifficultyLevel
 
 NO_GUESS = "NO GUESS"
 
-PARTICIPANT_LIMIT = 2
+PARTICIPANT_LIMIT = 12
 
 
 class GameState:
@@ -195,7 +195,7 @@ class GameHost:
         print("Registering player %s" % participant.identity)
         self._drawings[participant.identity] = PlayerDrawing(participant.identity)
         return True
-    
+
     async def _load_player_drawing(self, participant: rtc.Participant):
         if participant.identity not in self._drawings:
             return

@@ -37,7 +37,7 @@ export function ConnectionForm() {
         </div>
       </div>
       <div className="window-body">
-        <div className="field-row">
+        <div className="field-row text-sm">
           Welcome to LivePaint, the realtime drawing game from the future.
         </div>
         <div className="field-row-stacked">

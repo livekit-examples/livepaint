@@ -1,0 +1,11 @@
+@tailwind components;
+@tailwind utilities;
+
+canvas.drawing {
+  background: #fff;
+  box-shadow: inset -1px -1px #fff, inset 1px 1px grey,
+    inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a;
+  display: block;
+  margin: 0;
+  padding: 6px;
+}

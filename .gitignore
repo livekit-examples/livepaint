@@ -1,0 +1,10 @@
+.zed
+venv
+node_modules
+.next
+python-dotenv
+node_modules
+.env
+.env.local
+__pycache__
+.DS_Store

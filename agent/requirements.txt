@@ -1,0 +1,6 @@
+livekit-agents>=0.11
+asyncio
+python-dotenv
+livekit
+pillow
+openai

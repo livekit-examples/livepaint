@@ -52,10 +52,12 @@ export function PlayerTile({
         ctx.stroke();
       });
     }
-  }, [drawing?.lines, canvasRef]);
+  }, [drawing?.lines, canvasRef, canvasSize]);
   return (
     <fieldset className="w-full box-border">
-      <legend className="text-lg">{player.name}</legend>
+      <legend className={`text-lg`}>
+        {isWinner && "👑"} {player.name}
+      </legend>
       {currentGuess && (
         <span className="ml-2 text-gray-500">({currentGuess})</span>
       )}

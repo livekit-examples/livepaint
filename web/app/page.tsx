@@ -21,7 +21,8 @@ export default function Page() {
 }
 
 function Inner() {
-  const { connect, connectionState, disconnect, gameState, kickReason } = useGame();
+  const { connect, connectionState, disconnect, gameState, kickReason } =
+    useGame();
   const [showHelp, setShowHelp] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);

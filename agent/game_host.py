@@ -154,6 +154,7 @@ class GameHost:
                 self._game_state.winners = await self._check_winners()
                 if len(self._game_state.winners) > 0:
                     self._game_state.started = False
+                    self._last_guesses.clear()
                     print("found %d winners" % len(self._game_state.winners))
                 await self._publish_game_state()
             except Exception as e:
@@ -278,6 +279,9 @@ class GameHost:
         if guess := self._guess_cache.get(hash):
             print("Found cached guess (%s) for player %s" % (guess, player_identity))
             return guess
+        
+        if len(drawing.lines) == 0:
+            return NO_GUESS
 
         with io.BytesIO() as bytes_io:
             drawing.get_image().save(bytes_io, format="PNG")

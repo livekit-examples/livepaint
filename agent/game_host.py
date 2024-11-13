@@ -7,9 +7,8 @@ import random
 from collections import OrderedDict
 from typing import List
 
-import aiohttp
 import openai
-from livekit import agents, api, protocol, rtc
+from livekit import agents, api, rtc
 
 from drawings import Line, PlayerDrawing
 from prompts import PROMPTS, DifficultyLevel
@@ -65,6 +64,7 @@ class GameHost:
         self._ctx = ctx
         self._game_state = GameState()
         self._openai_client = openai.AsyncOpenAI()
+        self._lkapi = api.LiveKitAPI()
         self._drawings = {}
         self._guess_cache = GuessCache()
         self._last_guesses = {}
@@ -74,6 +74,7 @@ class GameHost:
     async def connect(self):
         print("Starting game host agent")
         await self._ctx.connect()
+        
         for participant in self._ctx.room.remote_participants.values():
             if self._register_player(participant):
                 await self._load_player_drawing(participant)
@@ -175,18 +176,12 @@ class GameHost:
         print("exiting judge loop")
 
     async def _publish_game_state(self):
-        async with aiohttp.ClientSession() as session:
-            await api.room_service.RoomService(
-                session,
-                os.getenv("LIVEKIT_URL"),
-                os.getenv("LIVEKIT_API_KEY"),
-                os.getenv("LIVEKIT_API_SECRET"),
-            ).update_room_metadata(
-                protocol.room.UpdateRoomMetadataRequest(
-                    room=self._ctx.room.name,
-                    metadata=self._game_state.to_json_string(),
-                )
+        await self._lkapi.room.update_room_metadata(
+            api.UpdateRoomMetadataRequest(
+                room=self._ctx.room.name,
+                metadata=self._game_state.to_json_string(),
             )
+        )
 
     def _register_player(self, participant: rtc.Participant) -> bool:
         if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_AGENT:
@@ -238,17 +233,11 @@ class GameHost:
             payload=json.dumps({"reason": reason}),
         )
 
-        async with aiohttp.ClientSession() as session:
-            await api.room_service.RoomService(
-                session,
-                os.getenv("LIVEKIT_URL"),
-                os.getenv("LIVEKIT_API_KEY"),
-                os.getenv("LIVEKIT_API_SECRET"),
-            ).remove_participant(
-                protocol.room.RoomParticipantIdentity(
-                    room=self._ctx.room.name, identity=participant.identity
-                )
+        await self._lkapi.room.remove_participant(
+            api.RemoveParticipantRequest(
+                room=self._ctx.room.name, identity=participant.identity
             )
+        )
 
     def _unregister_player(self, participant: rtc.Participant):
         if participant.kind == rtc.ParticipantKind.PARTICIPANT_KIND_AGENT:

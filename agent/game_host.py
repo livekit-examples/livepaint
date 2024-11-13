@@ -69,6 +69,7 @@ class GameHost:
         self._guess_cache = GuessCache()
         self._last_guesses = {}
         self._kick_tasks = set()
+        self._used_prompts = []
 
     async def connect(self):
         print("Starting game host agent")
@@ -109,7 +110,13 @@ class GameHost:
         
         prompt = payload.get("prompt")
         if not prompt:
-            prompt = random.choice(PROMPTS[self._game_state.difficulty])
+            available_prompts = [p for p in PROMPTS[self._game_state.difficulty] 
+                               if p not in self._used_prompts]
+            if not available_prompts:
+                self._used_prompts = []
+                available_prompts = PROMPTS[self._game_state.difficulty]
+            prompt = random.choice(available_prompts)
+            self._used_prompts.append(prompt)
             
         self._last_guesses.clear()
         for player_identity, drawing in self._drawings.items():

@@ -58,9 +58,7 @@ export function PlayerTile({
       <legend className={`text-lg`}>
         {isWinner && "👑"} {player.name}
       </legend>
-      {currentGuess && (
-        <span className="ml-2 text-gray-500">({currentGuess})</span>
-      )}
+      Guess: {currentGuess && <span className="font-bold">{currentGuess}</span>}
       <canvas
         ref={canvasRef}
         width={canvasSize}

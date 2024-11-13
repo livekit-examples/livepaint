@@ -92,7 +92,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
   const [kickReason, setKickReason] = useState<string | undefined>(undefined);
   const connectionState = useConnectionState(room);
-  const [shouldEnableMicrophone, setShouldEnableMicrophone] = useState(true);
+  const [shouldEnableMicrophone, setShouldEnableMicrophone] = useState(() => {
+    return localStorage.getItem("shouldEnableMicrophone") !== "false";
+  });
 
   const disconnect = useCallback(() => {
     room.disconnect();
@@ -100,7 +102,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [room]);
 
   const connect = useCallback(
-    async (playerName: string, roomName: string) => {
+    async (roomName: string, playerName: string) => {
       playerName = playerName.trim();
       roomName = roomName.trim();
 
@@ -197,9 +199,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [localPlayer, host]);
 
   useEffect(() => {
-    setDrawings(new Map());
-    setGuesses(new Map());
-    setLocalDrawing(new PlayerDrawing());
+    if (gameState.started) {
+      setDrawings(new Map());
+      setGuesses(new Map());
+      setLocalDrawing(new PlayerDrawing());
+    }
   }, [gameState.started]);
 
   const onDrawLine = useCallback(
@@ -320,6 +324,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
       room.localParticipant.setMicrophoneEnabled(shouldEnableMicrophone);
     }
   }, [shouldEnableMicrophone, room]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "shouldEnableMicrophone",
+      shouldEnableMicrophone.toString(),
+    );
+  }, [shouldEnableMicrophone]);
 
   return (
     <GameContext.Provider

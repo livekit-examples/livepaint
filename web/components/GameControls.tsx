@@ -26,9 +26,7 @@ export function GameControls({
         <div className="flex-1">
           <p className="my-0">
             Game prompt:
-            <span className="text-lg ml-2">
-              {gameState.started ? gameState.prompt : ""}
-            </span>
+            <span className="text-lg ml-2">{gameState.prompt ?? ""}</span>
           </p>
           <p className="my-0">
             Last guessed:

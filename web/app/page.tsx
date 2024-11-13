@@ -7,7 +7,7 @@ import { UrlRoomNameProvider } from "@/providers/UrlRoomNameProvider";
 import { GameControls } from "@/components/GameControls";
 import { Canvas } from "@/components/Canvas";
 import { HelpWindow } from "@/components/HelpWindow";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { WinnerWindow } from "@/components/WinnerWindow";
 import { useEffect } from "react";
 import { CustomPromptWindow } from "@/components/CustomPromptWindow";
@@ -22,17 +22,22 @@ export default function Page() {
 }
 
 function Inner() {
-  const { connect, connectionState, disconnect, gameState, kickReason, room } =
-    useGame();
+  const { connectionState, disconnect, gameState, room } = useGame();
   const [showHelp, setShowHelp] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
+  const prevGameStartedRef = useRef(false);
 
   useEffect(() => {
-    if (gameState.winners.length > 0) {
+    if (
+      gameState.winners.length > 0 &&
+      gameState.started === false &&
+      prevGameStartedRef.current === true
+    ) {
       setShowWinnerModal(true);
     }
-  }, [gameState.winners]);
+    prevGameStartedRef.current = gameState.started;
+  }, [gameState.winners, gameState.started]);
 
   return (
     <main className="h-screen flex justify-center items-center">

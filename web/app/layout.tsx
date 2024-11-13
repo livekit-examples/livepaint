@@ -18,7 +18,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
         <title>LivePaint</title>
       </head>
-      <body className="overflow-hidden">{children}</body>
+      <body className="overflow-hidden bg-[#00807F]">{children}</body>
     </html>
   );
 }

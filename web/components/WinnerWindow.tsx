@@ -22,7 +22,14 @@ export function WinnerWindow({ onClose }: { onClose: () => void }) {
             .join(", ");
       }
     } else if (gameState.winners.length > 0) {
-      winnerText = gameState.winners.join(", ") + " won. You lost :(";
+      winnerText =
+        gameState.winners
+          .map(
+            (identity: string) =>
+              remotePlayers.find((p) => p.identity === identity)?.name ??
+              identity,
+          )
+          .join(", ") + " won. You lost :(";
     }
     return winnerText;
   }, [localPlayer, gameState, remotePlayers]);

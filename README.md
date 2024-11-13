@@ -4,7 +4,7 @@ This is an example project demonstrating how to build a realtime data app using 
 
 In this example, we build a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by an AI agent that oversees the whole game. 
 
-This example demonstrates the use of [data messages](https://docs.livekit.io/home/client/data/messages), [room metadata](https://docs.livekit.io/home/client/data/room-metadata/), [RPC](https://docs.livekit.io/home/client/data/rpc/), [participant management](https://docs.livekit.io/home/server/managing-participants/), and [token generation](https://docs.livekit.io/home/server/generating-tokens/), in a real-world app built on the LiveKit [JS SDK](https://github.com/livekit/client-sdk-js), [React Components](https://github.com/livekit/components-js), [Python agents SDK](https://github.com/livekit/agents), and [Python Server API](https://github.com/livekit/python-sdks).
+This example demonstrates the use of [realtime data messages](https://docs.livekit.io/home/client/data/messages), [room metadata](https://docs.livekit.io/home/client/data/room-metadata/), [RPC](https://docs.livekit.io/home/client/data/rpc/), [participant management](https://docs.livekit.io/home/server/managing-participants/), [token generation](https://docs.livekit.io/home/server/generating-tokens/), and [realtime audio chat](https://docs.livekit.io/home/client/tracks/) in a real-world app built on the LiveKit [JS SDK](https://github.com/livekit/client-sdk-js), [React Components](https://github.com/livekit/components-js), [Python agents SDK](https://github.com/livekit/agents), and [Python Server API](https://github.com/livekit/python-sdks).
 
 Try it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)!
 
@@ -54,7 +54,26 @@ The agent is responsible for judging each player's drawing. It runs a single loo
 4. All guesses are published as data messages to all players, using the topic `host.guess`.
 5. If any winners were found, the agent updates the game state to end the game and list the winners. Otherwise it sleeps for a few seconds and checks again.
 
-### Running Locally
+### Audio Chat
+
+Realtime chat is enabled within each room by [publishing the local microphone](https://docs.livekit.io/home/client/tracks/publish/) and [rendering the room audio](https://docs.livekit.io/reference/components/react/component/roomaudiorenderer/).
+
+## Ideas / What's Next?
+
+If you'd like to learn to build with LiveKit, try to implement the following feature ideas or invent your own:
+
+- Add a scoreboard that shows how many wins each player has racked up
+    - We think [participant attributes](https://docs.livekit.io/home/client/data/participant-attributes/) is a great place to keep track of this
+- Have the AI agent make its guesses and announce winners with realtime audio as well as text
+    - We'd try using a [Text-To-Speech plugin](https://docs.livekit.io/agents/plugins/#text-to-speech-tts)
+    - Consider having the agent publish a different track to each participant, so they don't need to hear the guesses for everyone else in realtime
+- Add a room list on the front page that shows open rooms and lets you join one
+    - Try the [List Rooms](https://docs.livekit.io/home/server/managing-rooms/#list-rooms) Server API
+- Add support for multiple brush sizes and colors
+    - You'll probably want to extend the data format for `Line` to record brush size and color
+
+
+## Development & Running Locally
 
 Run the agent:
 

@@ -329,6 +329,12 @@ class GameHost:
         guess = response.choices[0].message.content
         print("Made new guess (%s) for player %s" % (guess, player_identity))
         self._guess_cache.set(hash, guess)
+        if guess == "CHEATER CHEATER":
+            await self._ctx.room.local_participant.perform_rpc(
+                method="player.caught_cheating",
+                destination_identity=player_identity,
+                payload="",
+            )
         return guess
 
     async def _make_guesses(self) -> List[str]:

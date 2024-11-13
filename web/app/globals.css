@@ -12,6 +12,13 @@ footer {
   -webkit-font-smoothing: none;
 }
 
+.bsod {
+  font-family: "Pixelated MS Sans Serif", Arial;
+  -webkit-font-smoothing: none;
+  background-color: #0000FF;
+  color: white;
+}
+
 canvas.drawing {
   background: #fff;
   box-shadow: inset -1px -1px #fff, inset 1px 1px grey,

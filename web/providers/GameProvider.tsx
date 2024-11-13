@@ -61,6 +61,7 @@ export interface GameContextType {
   kickReason: string | undefined;
   shouldEnableMicrophone: boolean;
   setShouldEnableMicrophone: (enabled: boolean) => void;
+  isBSOD: boolean;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -93,6 +94,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const [kickReason, setKickReason] = useState<string | undefined>(undefined);
   const connectionState = useConnectionState(room);
   const [shouldEnableMicrophone, setShouldEnableMicrophone] = useState(true);
+  const [isBSOD, setIsBSOD] = useState(false);
 
   const disconnect = useCallback(() => {
     room.disconnect();
@@ -318,6 +320,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [localPlayer, disconnect, host]);
 
   useEffect(() => {
+    async function handleCaughtCheating(data: RpcInvocationData) {
+      if (data.callerIdentity !== host?.identity) {
+        console.log("refusing to be cheated by", data.callerIdentity);
+        return "";
+      }
+
+      setIsBSOD(true);
+      return "";
+    }
+    localPlayer?.registerRpcMethod(
+      "player.caught_cheating",
+      handleCaughtCheating,
+    );
+    return () => {
+      localPlayer?.unregisterRpcMethod("player.caught_cheating");
+    };
+  }, [localPlayer, host]);
+
+  useEffect(() => {
     if (room.state === ConnectionState.Connected) {
       room.localParticipant.setMicrophoneEnabled(shouldEnableMicrophone);
     }
@@ -352,6 +373,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         kickReason,
         shouldEnableMicrophone,
         setShouldEnableMicrophone,
+        isBSOD,
       }}
     >
       <RoomContext.Provider value={room}>{children}</RoomContext.Provider>

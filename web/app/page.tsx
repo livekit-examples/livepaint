@@ -16,6 +16,7 @@ import logo from "@/assets/logo.svg";
 import Image from "next/image";
 import LiveKitLogo from "@/assets/livekit.svg";
 import { Window } from "@/components/Window";
+import { BSOD } from "@/components/BSOD";
 
 export default function Page() {
   return (
@@ -26,7 +27,7 @@ export default function Page() {
 }
 
 function Inner() {
-  const { connectionState, disconnect, gameState, room } = useGame();
+  const { connectionState, disconnect, gameState, room, isBSOD } = useGame();
   const [showHelp, setShowHelp] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
@@ -117,6 +118,7 @@ function Inner() {
           View Source
         </a>
       </footer>
+      {isBSOD && <BSOD />}
     </>
   );
 }

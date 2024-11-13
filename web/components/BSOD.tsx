@@ -6,12 +6,15 @@ export function BSOD() {
       <div>
         <p className="inline-block px-1 mb-6 bg-white text-[#0000FF]">System</p>
         <p className="mb-6">
-          Fatal exception "CHEATING_DETECTED" occurred at LivePaint.exe
+          Fatal exception &quot;CHEATING_DETECTED&quot; occurred at
+          LivePaint.exe
           <br />
-          (C:\Program Files\LivePaint\LivePaint.exe). Current application will be terminated.
+          (C:\Program Files\LivePaint\LivePaint.exe). Current application will
+          be terminated.
         </p>
         <p className="mb-6">
-          * Press F5 to terminate the current application. You will lose any unsaved information in all
+          * Press F5 to terminate the current application. You will lose any
+          unsaved information in all
           <br />
           &nbsp;&nbsp;applications.
         </p>

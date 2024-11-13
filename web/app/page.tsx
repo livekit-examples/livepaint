@@ -36,6 +36,8 @@ function Inner() {
       prevGameStartedRef.current === true
     ) {
       setShowWinnerModal(true);
+    } else if (gameState.started === true) {
+      setShowWinnerModal(false);
     }
     prevGameStartedRef.current = gameState.started;
   }, [gameState.winners, gameState.started]);

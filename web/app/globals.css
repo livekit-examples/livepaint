@@ -1,6 +1,17 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  margin: 0;
+}
+
+footer {
+  box-shadow: inset 1px 1px #dfdfdf, inset 2px 2px #fff;
+  background-color: silver;
+  font-family: "Pixelated MS Sans Serif", Arial;
+  -webkit-font-smoothing: none;
+}
+
 canvas.drawing {
   background: #fff;
   box-shadow: inset -1px -1px #fff, inset 1px 1px grey,

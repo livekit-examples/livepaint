@@ -32,8 +32,13 @@ export function HelpWindow({ onClose }: { onClose: () => void }) {
         <p>Made with ♥ &nbsp;at LiveKit.</p>
         <p>
           Source available on{" "}
-          <a href="https://github.com/livekit-examples/livepaint">GitHub</a>,
-          Apache License 2.0.
+          <a
+            href="https://github.com/livekit-examples/livepaint"
+            target="_blank"
+          >
+            GitHub
+          </a>
+          , Apache License 2.0.
         </p>
       </div>
     </Window>

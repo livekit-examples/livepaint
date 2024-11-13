@@ -25,7 +25,7 @@ export function ConnectionForm() {
 
   const onConnectButtonClicked = useCallback(() => {
     localStorage.setItem("playerName", playerName);
-    connect(roomName, playerName);
+    connect(playerName, roomName);
   }, [playerName, roomName, connect]);
 
   return (

@@ -12,7 +12,8 @@ import { WinnerWindow } from "@/components/WinnerWindow";
 import { useEffect } from "react";
 import { CustomPromptWindow } from "@/components/CustomPromptWindow";
 import { RoomAudioRenderer } from "@livekit/components-react";
-
+import logo from "@/assets/logo.svg";
+import Image from "next/image";
 export default function Page() {
   return (
     <GameProvider>
@@ -44,7 +45,16 @@ function Inner() {
       {connectionState === "connected" ? (
         <div className="window w-[768px] h-[676px]">
           <div className="title-bar">
-            <div className="title-bar-text">LivePaint</div>
+            <div className="title-bar-text">
+              <Image
+                src={logo}
+                alt="LivePaint"
+                height={12}
+                width={12}
+                className="mr-1"
+              />
+              LivePaint
+            </div>
             <div className="title-bar-controls">
               <button
                 aria-label="Help"

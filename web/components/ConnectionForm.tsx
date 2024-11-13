@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import Image from "next/image";
 import { useUrlRoomName } from "@/providers/UrlRoomNameProvider";
 import { HelpWindow } from "./HelpWindow";
 import { useGame } from "@/providers/GameProvider";
+import logo from "@/assets/logo.svg";
 export function ConnectionForm() {
   const {
     connect,
@@ -31,7 +33,16 @@ export function ConnectionForm() {
   return (
     <div className="window w-[500px]">
       <div className="title-bar">
-        <div className="title-bar-text">LivePaint</div>
+        <div className="title-bar-text">
+          <Image
+            src={logo}
+            alt="LivePaint"
+            height={12}
+            width={12}
+            className="mr-1"
+          />
+          LivePaint
+        </div>
         <div className="title-bar-controls">
           <button aria-label="Help" onClick={() => setShowHelp(true)}></button>
         </div>

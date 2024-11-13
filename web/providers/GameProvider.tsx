@@ -92,9 +92,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
   const [kickReason, setKickReason] = useState<string | undefined>(undefined);
   const connectionState = useConnectionState(room);
-  const [shouldEnableMicrophone, setShouldEnableMicrophone] = useState(() => {
-    return localStorage.getItem("shouldEnableMicrophone") !== "false";
-  });
+  const [shouldEnableMicrophone, setShouldEnableMicrophone] = useState(true);
 
   const disconnect = useCallback(() => {
     room.disconnect();
@@ -326,11 +324,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [shouldEnableMicrophone, room]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "shouldEnableMicrophone",
-      shouldEnableMicrophone.toString(),
-    );
-  }, [shouldEnableMicrophone]);
+    const storedValue = localStorage.getItem("shouldEnableMicrophone");
+    if (storedValue !== null) {
+      setShouldEnableMicrophone(storedValue !== "false");
+    }
+  }, []);
 
   return (
     <GameContext.Provider

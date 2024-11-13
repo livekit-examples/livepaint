@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useGame } from "@/providers/GameProvider";
+import { Window } from "@/components/Window";
 
 export function CustomPromptWindow({ onClose }: { onClose: () => void }) {
   const { startGame } = useGame();
@@ -8,7 +9,7 @@ export function CustomPromptWindow({ onClose }: { onClose: () => void }) {
   );
 
   return (
-    <div className="window absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-100">
+    <Window className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-100">
       <div className="title-bar">
         <div className="title-bar-text">Custom Prompt</div>
         <div className="title-bar-controls">
@@ -23,7 +24,7 @@ export function CustomPromptWindow({ onClose }: { onClose: () => void }) {
             type="text"
             value={customPrompt ?? ""}
             onChange={(e) => setCustomPrompt(e.target.value)}
-            placeholder="Enter a custom prompt"
+            placeholder="Steve Ballmer"
           />
         </div>
         <section className="field-row justify-end">
@@ -38,6 +39,6 @@ export function CustomPromptWindow({ onClose }: { onClose: () => void }) {
           </button>
         </section>
       </div>
-    </div>
+    </Window>
   );
 }

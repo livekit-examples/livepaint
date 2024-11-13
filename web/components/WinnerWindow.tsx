@@ -1,6 +1,6 @@
 import { useGame } from "@/providers/GameProvider";
 import { useMemo } from "react";
-
+import { Window } from "@/components/Window";
 export function WinnerWindow({ onClose }: { onClose: () => void }) {
   const { localPlayer, remotePlayers, gameState } = useGame();
 
@@ -35,7 +35,7 @@ export function WinnerWindow({ onClose }: { onClose: () => void }) {
   }, [localPlayer, gameState, remotePlayers]);
 
   return (
-    <div className="window absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-100">
+    <Window className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-100">
       <div className="title-bar">
         <div className="title-bar-text">Game Over!</div>
         <div className="title-bar-controls">
@@ -45,6 +45,6 @@ export function WinnerWindow({ onClose }: { onClose: () => void }) {
       <div className="window-body">
         <p className="text-center m-4">{winnerText}</p>
       </div>
-    </div>
+    </Window>
   );
 }

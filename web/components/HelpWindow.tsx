@@ -1,6 +1,8 @@
+import { Window } from "@/components/Window";
+
 export function HelpWindow({ onClose }: { onClose: () => void }) {
   return (
-    <div
+    <Window
       className="window credits-window"
       style={{
         position: "absolute",
@@ -34,6 +36,6 @@ export function HelpWindow({ onClose }: { onClose: () => void }) {
           Apache License 2.0.
         </p>
       </div>
-    </div>
+    </Window>
   );
 }

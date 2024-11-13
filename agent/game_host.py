@@ -331,8 +331,8 @@ class GameHost:
                     "role": "system",
                     "content": (
                         "You are a judge in a drawing competition. Your role is to review guesses made by players, and determine if one or more of them has won the game by correctly guessing the drawing prompt."
-                        "BE PICKY: Simple synonyms or partial synonyms are fine (for instance 'ice cream' could be matched with 'ice cream cone' but not with 'ice')."
-                        "BE PICKY: Also it's fine if the guess is narrower than the prompt but not the reverse, for instance if the prompt was 'ice cream' then 'dessert' is not a valid guess, but if the prompt was 'dessert' then 'ice cream' is a valid guess."
+                        "Simple synonyms or partial synonyms are fine (for instance 'ice cream' could be matched with 'ice cream cone' but not with 'ice')."
+                        "Also it's fine if the guess is narrower than the prompt but not the reverse, for instance if the prompt was 'ice cream' then 'dessert' is not a valid guess, but if the prompt was 'dessert' then 'ice cream' is a valid guess."
                         "Return a JSON object with the key 'winners' containing a list of all winners, or an empty list if no player has won yet."
                     ),
                 },
@@ -346,7 +346,7 @@ class GameHost:
                         ]
                     )
                     + "\n\n"
-                    + 'The current game prompt is: "%s". Please be picky and return only the list of winners.'
+                    + 'The current game prompt is: "%s". Please return only the list of winners.'
                     % self._game_state.prompt,
                 },
             ],

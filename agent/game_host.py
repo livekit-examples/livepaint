@@ -106,10 +106,14 @@ class GameHost:
             return json.dumps({"started": False})
 
         payload = json.loads(data.payload)
-
+        
         prompt = payload.get("prompt")
         if not prompt:
             prompt = random.choice(PROMPTS[self._game_state.difficulty])
+            
+        self._last_guesses.clear()
+        for player_identity, drawing in self._drawings.items():
+            drawing.clear()
 
         self._game_state = GameState(True, self._game_state.difficulty, prompt, [])
         await self._publish_game_state()

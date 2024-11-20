@@ -2,11 +2,11 @@
 
 This is an example project demonstrating how to build a realtime data app using LiveKit.
 
-In this example, we build a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by an AI agent that oversees the whole game. 
+It contains a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by a realtime AI agent that oversees the whole game. 
 
 This example demonstrates the use of [realtime data messages](https://docs.livekit.io/home/client/data/messages), [room metadata](https://docs.livekit.io/home/client/data/room-metadata/), [RPC](https://docs.livekit.io/home/client/data/rpc/), [participant management](https://docs.livekit.io/home/server/managing-participants/), [token generation](https://docs.livekit.io/home/server/generating-tokens/), and [realtime audio chat](https://docs.livekit.io/home/client/tracks/) in a real-world app built on the LiveKit [JS SDK](https://github.com/livekit/client-sdk-js), [React Components](https://github.com/livekit/components-js), [Python agents SDK](https://github.com/livekit/agents), and [Python Server API](https://github.com/livekit/python-sdks).
 
-Try it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)!
+Try it live at [https://paint.livekit.io](https://paint.livekit.io)!
 
 ## Architecture
 

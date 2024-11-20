@@ -10,6 +10,8 @@ Try it live at [https://paint.livekit.io](https://paint.livekit.io)!
 
 ## Architecture
 
+This is a short overview of how this game is built. The entire codebase is also annotated with comments that go into more detail. The `agent` directory contains the code for the realtime agent (built on [LiveKit Agents](https://docs.livekit.io/agents)). The `web` directory contains the code for the game frontend (built on [Next.js](https://nextjs.org/) with [LiveKit React Components](https://github.com/livekit/components-js)).
+
 ### Rooms & Participants
 
 Each game is hosted in a single [LiveKit room](https://docs.livekit.io/home/client/connect) where each player is a standard participant.  The room is reused between games, so the same group of players can complete multiple games back-to-back.

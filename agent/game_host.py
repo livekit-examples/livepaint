@@ -263,7 +263,10 @@ class GameHost:
             payload=json.dumps({"reason": reason}),
         )
 
-        # In case the participant didn't remove themselves, we'll forcibly remove them as well
+        # Wait 100ms to allow the participant to disconnect themselves
+        await asyncio.sleep(0.1)
+
+        # In case the participant didn't remove themselves, we'll forcibly remove them anyways
         await self._lkapi.room.remove_participant(
             api.RemoveParticipantRequest(
                 room=self._ctx.room.name, identity=participant.identity

@@ -5,6 +5,7 @@ import {
 } from "livekit-server-sdk";
 import { NextResponse } from "next/server";
 
+// API keys and secrets are stored in environment variables, which are loaded from the `.env` file
 const API_KEY = process.env.LIVEKIT_API_KEY;
 const API_SECRET = process.env.LIVEKIT_API_SECRET;
 const LIVEKIT_URL = process.env.LIVEKIT_URL;
@@ -14,8 +15,10 @@ export type ConnectionDetails = {
   participantToken: string;
 };
 
+// This API endpoint generates a participant token for the client to use when connecting to the LiveKit server
 export async function GET(request: Request) {
   try {
+    // Parse the player name and room name from the URL
     const url = new URL(request.url);
     const playerName = url.searchParams.get("playerName") ?? "anonymous";
     const roomName =
@@ -25,6 +28,7 @@ export async function GET(request: Request) {
       Math.random() * 10_000,
     )}`;
 
+    // Create a participant token for the client to use when connecting to the LiveKit server
     const participantToken = await createParticipantToken(
       {
         identity: participantIdentity,
@@ -55,6 +59,7 @@ function createParticipantToken(
   userInfo: AccessTokenOptions,
   roomName: string,
 ) {
+  // See https://docs.livekit.io/home/server/generating-tokens/ for more information
   const at = new AccessToken(API_KEY, API_SECRET, userInfo);
   at.ttl = "5m";
   const grant: VideoGrant = {

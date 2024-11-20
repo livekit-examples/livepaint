@@ -19,15 +19,21 @@ import { Window } from "@/components/Window";
 import { BSOD } from "@/components/BSOD";
 
 export default function Page() {
+  // Our GameProvider wraps our app and makes the game state and connection state available to all components
   return (
     <GameProvider>
-      <Inner />
+      <UrlRoomNameProvider>
+        <Inner />
+      </UrlRoomNameProvider>
     </GameProvider>
   );
 }
 
 function Inner() {
+  // Our useGame hook provides us with the game state and connection state, and a set of functions to interact with the game
   const { connectionState, disconnect, gameState, room, isBSOD } = useGame();
+
+  // Local state variables to manage our UI
   const [showHelp, setShowHelp] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
@@ -49,6 +55,7 @@ function Inner() {
   return (
     <>
       <main className="h-screen flex justify-center items-center">
+        {/* In-room connected state (game UI) */}
         {connectionState === "connected" ? (
           <>
             <Window className="w-[768px] h-[676px]">
@@ -81,8 +88,11 @@ function Inner() {
                 </div>
               </div>
 
+              {/* Allows audio playback (for voice chat) */}
               {room && <RoomAudioRenderer />}
             </Window>
+
+            {/* extra windows for various modal states */}
             {showWinnerModal && (
               <WinnerWindow onClose={() => setShowWinnerModal(false)} />
             )}
@@ -94,9 +104,8 @@ function Inner() {
             )}
           </>
         ) : (
-          <UrlRoomNameProvider>
-            <ConnectionForm />
-          </UrlRoomNameProvider>
+          // Disconnected state (connection form)
+          <ConnectionForm />
         )}
       </main>
       <footer className="absolute bottom-0 w-full text-sm p-2 flex justify-between box-border">
@@ -118,6 +127,8 @@ function Inner() {
           View Source
         </a>
       </footer>
+
+      {/* Takeover UI for cheating detection */}
       {isBSOD && <BSOD />}
     </>
   );

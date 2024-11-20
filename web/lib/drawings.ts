@@ -1,11 +1,11 @@
-export type Line = {
-  fromPoint: Point;
-  toPoint: Point;
-};
-
 export type Point = {
   x: number;
   y: number;
+};
+
+export type Line = {
+  fromPoint: Point;
+  toPoint: Point;
 };
 
 export class PlayerDrawing {
@@ -30,6 +30,8 @@ export class PlayerDrawing {
   }
 }
 
+// Encodes a line into a compact binary format for efficient network transmission
+// See the Python implementation in `agent/drawings.py` for more information
 export const encodeLine = (line: Line) => {
   const array = new Uint16Array(4);
   array[0] = Math.floor(line.fromPoint.x * 65535);

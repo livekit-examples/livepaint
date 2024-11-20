@@ -21,7 +21,7 @@ class Line:
     # and also encoded in bulk as base64 for drawing restoration (the `player.get_drawing` RPC call)
     # While points are normally stored as 32-bit floats, we can can save 50% of the space by using 16-bit integers instead when they are sent over the network
     # The integers are thus in the range of 0 to 65535. This is more than enough for our purposes, as no player is likely to have a canvas larger than about 1024x1024 pixels anyways
-    # Also note that we have a parallel implementation in the client in `drawing.ts` that performs the same operations in TypeScript
+    # Also note that we have a parallel implementation in the client in `web/lib/drawings.ts` that performs the same operations in TypeScript
     def encode(self) -> bytes:
         return struct.pack(
             "<HHHH",

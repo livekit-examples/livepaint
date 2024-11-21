@@ -17,7 +17,6 @@ const UrlRoomNameContext = createContext<UrlRoomNameContextType | undefined>(
   undefined,
 );
 
-
 // A react context that syncs the room name with the URL hash
 export function UrlRoomNameProvider({ children }: { children: ReactNode }) {
   const [urlRoomName, setUrlRoomName] = useState("");

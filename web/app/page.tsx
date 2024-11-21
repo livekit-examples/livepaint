@@ -3,7 +3,10 @@
 import { GameProvider, useGame } from "@/providers/GameProvider";
 import { PlayersList } from "@/components/PlayersList";
 import { ConnectionForm } from "@/components/ConnectionForm";
-import { UrlRoomNameProvider, useUrlRoomName } from "@/providers/UrlRoomNameProvider";
+import {
+  UrlRoomNameProvider,
+  useUrlRoomName,
+} from "@/providers/UrlRoomNameProvider";
 import { GameControls } from "@/components/GameControls";
 import { Canvas } from "@/components/Canvas";
 import { HelpWindow } from "@/components/HelpWindow";

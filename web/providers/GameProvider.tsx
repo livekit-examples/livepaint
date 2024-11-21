@@ -191,9 +191,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
         const url = new URL(
           process.env.NEXT_PUBLIC_CONN_DETAILS_ENDPOINT ??
             `/api/connection-details?playerName=${encodeURIComponent(
-              playerName
+              playerName,
             )}&roomName=${encodeURIComponent(roomName)}`,
-          window.location.origin
+          window.location.origin,
         );
 
         // We'll attempt to connect to the room using the connection details
@@ -206,7 +206,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
             // Connect to the LiveKit room using the provided token and server URL
             await room.connect(
               connectionDetailsData.serverUrl,
-              connectionDetailsData.participantToken
+              connectionDetailsData.participantToken,
             );
           })(),
           timeoutPromise,
@@ -216,7 +216,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         disconnect();
         alert(
           "Failed to connect: " +
-            (error instanceof Error ? error.message : "Unknown error")
+            (error instanceof Error ? error.message : "Unknown error"),
         );
       }
 
@@ -246,7 +246,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDrawings((prev) => new Map(prev).set(participant.identity, drawing));
       }
     },
-    [room, disconnect, shouldEnableMicrophone]
+    [room, disconnect, shouldEnableMicrophone],
   );
 
   // Start the game with the given prompt via RPC to the host
@@ -266,7 +266,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         payload: JSON.stringify({ prompt: prompt?.trim() }),
       });
     },
-    [localPlayer, host]
+    [localPlayer, host],
   );
 
   // End the current game via RPC to the host
@@ -307,7 +307,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         topic: "player.draw_line",
       });
     },
-    [localPlayer, localDrawing]
+    [localPlayer, localDrawing],
   );
 
   // When the local player clears their drawing, broadcast it to the room using data messages
@@ -339,7 +339,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         payload: JSON.stringify({ difficulty }),
       });
     },
-    [localPlayer, host]
+    [localPlayer, host],
   );
 
   // Register a handler for data messages from other participants when the Room is created
@@ -349,7 +349,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       payload: Uint8Array,
       participant: RemoteParticipant | undefined,
       kind: DataPacket_Kind | undefined,
-      topic: string | undefined
+      topic: string | undefined,
     ) => {
       if (!participant) {
         return;
@@ -375,7 +375,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         // The host has completed a new round of guesses. We replace our guesses with the new ones.
       } else if (topic === "host.guess") {
         const guesses = new Map<string, string>(
-          Object.entries(JSON.parse(new TextDecoder().decode(payload)))
+          Object.entries(JSON.parse(new TextDecoder().decode(payload))),
         );
         setGuesses(guesses);
       }
@@ -467,7 +467,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     // Register the handler for the `player.caught_cheating` method
     localPlayer?.registerRpcMethod(
       "player.caught_cheating",
-      handleCaughtCheating
+      handleCaughtCheating,
     );
     return () => {
       // Unregister the RPC method when the component unmounts (localPlayer has changed)

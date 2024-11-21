@@ -4,7 +4,7 @@ import { Window } from "@/components/Window";
 
 // This window allows the player to enter a custom prompt and start the game
 export function CustomPromptWindow({ onClose }: { onClose: () => void }) {
-  // Our useGame hook provides us with the `startGame` function, which is all we need for this component  
+  // Our useGame hook provides us with the `startGame` function, which is all we need for this component
   const { startGame } = useGame();
 
   // Local state to track the custom prompt

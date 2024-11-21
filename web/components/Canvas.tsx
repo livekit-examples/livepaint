@@ -42,11 +42,11 @@ export function Canvas() {
           ctx.beginPath();
           ctx.moveTo(
             line.fromPoint.x * canvas.width,
-            line.fromPoint.y * canvas.height
+            line.fromPoint.y * canvas.height,
           );
           ctx.lineTo(
             line.toPoint.x * canvas.width,
-            line.toPoint.y * canvas.height
+            line.toPoint.y * canvas.height,
           );
           ctx.stroke();
         });
@@ -71,7 +71,7 @@ export function Canvas() {
         lastYRef.current = y;
       }
     },
-    [context, gameState.winners, gameState.started]
+    [context, gameState.winners, gameState.started],
   );
 
   // When the player moves the mouse while holding down the button, we draw a new line
@@ -100,7 +100,7 @@ export function Canvas() {
         lastYRef.current = y;
       }
     },
-    [isDrawing, context, onDrawLine, gameState.started]
+    [isDrawing, context, onDrawLine, gameState.started],
   );
 
   // When the player releases the mouse button, we exit drawing mode
@@ -118,7 +118,7 @@ export function Canvas() {
         0,
         0,
         canvasRef.current.width,
-        canvasRef.current.height
+        canvasRef.current.height,
       );
       onClear();
     }

@@ -1,11 +1,13 @@
 "use client";
 import { useGame, DifficultyLevel } from "@/providers/GameProvider";
 
+// This component provides basic room & game controls
 export function GameControls({
   onCustomPrompt,
 }: {
   onCustomPrompt: () => void;
 }) {
+  // Our useGame hook provides us with everything we need to implement this component
   const {
     gameState,
     startGame,

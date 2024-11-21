@@ -1,11 +1,14 @@
 import { useGame } from "@/providers/GameProvider";
 import { useMemo } from "react";
 import { Window } from "@/components/Window";
+
+// This component is shown when the game is over. It displays the winner(s) of the game.
 export function WinnerWindow({ onClose }: { onClose: () => void }) {
   const { localPlayer, remotePlayers, gameState } = useGame();
 
   const winnerText = useMemo(() => {
     let winnerText = "";
+    // Winners are indexed by identity
     if (gameState.winners.includes(localPlayer?.identity ?? "")) {
       if (gameState.winners.length === 1) {
         winnerText = "You won! 🎉";
@@ -15,6 +18,7 @@ export function WinnerWindow({ onClose }: { onClose: () => void }) {
           gameState.winners
             .filter((identity: string) => identity !== localPlayer?.identity)
             .map(
+              // Turn the identity back into a name
               (identity: string) =>
                 remotePlayers.find((p) => p.identity === identity)?.name ??
                 identity,

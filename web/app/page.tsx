@@ -39,6 +39,7 @@ function Inner() {
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
   const prevGameStartedRef = useRef(false);
 
+  // Show the winner modal when the game ends
   useEffect(() => {
     if (
       gameState.winners.length > 0 &&

@@ -246,7 +246,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setDrawings((prev) => new Map(prev).set(participant.identity, drawing));
       }
     },
-    [room, disconnect, shouldEnableMicrophone],
+    [room, disconnect],
   );
 
   // Start the game with the given prompt via RPC to the host

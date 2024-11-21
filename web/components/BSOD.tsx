@@ -1,5 +1,6 @@
 "use client";
 
+// Special UI shown when cheating is detected
 export function BSOD() {
   return (
     <div className="absolute top-0 left-0 w-full h-full p-8 leading-relaxed bsod text-white font-[dos] text-xl font-bold">

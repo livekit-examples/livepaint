@@ -8,25 +8,34 @@ import { useGame } from "@/providers/GameProvider";
 import logo from "@/assets/logo.svg";
 import { Window } from "@/components/Window";
 
+// This component renders the connection form, which is the initial UI the player will see
 export function ConnectionForm() {
+  // Our useGame hook provides us with the just about everything we need for this component
   const {
     connect,
     connectionState,
-    disconnect,
     kickReason,
     shouldEnableMicrophone,
     setShouldEnableMicrophone,
   } = useGame();
+
+  // Local state to track the player name
   const [playerName, setPlayerName] = useState("");
+
+  // Our UrlRoomNameProvider lets us sync the room name with the URL hash
   const { urlRoomName: roomName, setUrlRoomName: setRoomName } =
     useUrlRoomName();
+
+  // Local state to track whether the help window is shown
   const [showHelp, setShowHelp] = useState(false);
 
+  // Load the player name from local storage, if any
   useEffect(() => {
     const savedName = localStorage.getItem("playerName");
     if (savedName) setPlayerName(savedName);
   }, []);
 
+  // Connect to the game
   const onConnectButtonClicked = useCallback(() => {
     localStorage.setItem("playerName", playerName);
     connect(roomName, playerName);
@@ -91,15 +100,19 @@ export function ConnectionForm() {
               disabled={connectionState === "connecting"}
               onClick={onConnectButtonClicked}
             >
+              {/* Use LiveKit's connection state for a status indicator */}
               {connectionState === "connecting" ? "Connecting…" : "Connect"}
             </button>
           </section>
+
+          {/* Upon disconnection, show the reason why */}
           {kickReason && (
             <div className="text-sm text-red-500 text-right">{kickReason}</div>
           )}
         </div>
       </Window>
 
+      {/* Show the help window if requested */}
       {showHelp && <HelpWindow onClose={() => setShowHelp(false)} />}
     </>
   );

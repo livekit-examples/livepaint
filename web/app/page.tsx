@@ -3,7 +3,10 @@
 import { GameProvider, useGame } from "@/providers/GameProvider";
 import { PlayersList } from "@/components/PlayersList";
 import { ConnectionForm } from "@/components/ConnectionForm";
-import { UrlRoomNameProvider } from "@/providers/UrlRoomNameProvider";
+import {
+  UrlRoomNameProvider,
+  useUrlRoomName,
+} from "@/providers/UrlRoomNameProvider";
 import { GameControls } from "@/components/GameControls";
 import { Canvas } from "@/components/Canvas";
 import { HelpWindow } from "@/components/HelpWindow";
@@ -19,20 +22,35 @@ import { Window } from "@/components/Window";
 import { BSOD } from "@/components/BSOD";
 
 export default function Page() {
+  // Our GameProvider wraps our app and makes the game state and connection state available to all components
   return (
     <GameProvider>
-      <Inner />
+      <UrlRoomNameProvider>
+        <Inner />
+      </UrlRoomNameProvider>
     </GameProvider>
   );
 }
 
 function Inner() {
+  // Our useGame hook provides us with the game state and connection state, and a set of functions to interact with the game
   const { connectionState, disconnect, gameState, room, isBSOD } = useGame();
+
+  // Local state variables to manage our UI
   const [showHelp, setShowHelp] = useState(false);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
   const prevGameStartedRef = useRef(false);
 
+  const { urlRoomName } = useUrlRoomName();
+
+  useEffect(() => {
+    if (urlRoomName && urlRoomName !== room?.name) {
+      disconnect();
+    }
+  }, [urlRoomName, room?.name, disconnect]);
+
+  // Show the winner modal when the game ends
   useEffect(() => {
     if (
       gameState.winners.length > 0 &&
@@ -49,6 +67,7 @@ function Inner() {
   return (
     <>
       <main className="h-screen flex justify-center items-center">
+        {/* In-room connected state (game UI) */}
         {connectionState === "connected" ? (
           <>
             <Window className="w-[768px] h-[676px]">
@@ -81,8 +100,11 @@ function Inner() {
                 </div>
               </div>
 
+              {/* Allows audio playback (for voice chat) */}
               {room && <RoomAudioRenderer />}
             </Window>
+
+            {/* extra windows for various modal states */}
             {showWinnerModal && (
               <WinnerWindow onClose={() => setShowWinnerModal(false)} />
             )}
@@ -94,9 +116,8 @@ function Inner() {
             )}
           </>
         ) : (
-          <UrlRoomNameProvider>
-            <ConnectionForm />
-          </UrlRoomNameProvider>
+          // Disconnected state (connection form)
+          <ConnectionForm />
         )}
       </main>
       <footer className="absolute bottom-0 w-full text-sm p-2 flex justify-between box-border">
@@ -118,6 +139,8 @@ function Inner() {
           View Source
         </a>
       </footer>
+
+      {/* Takeover UI for cheating detection */}
       {isBSOD && <BSOD />}
     </>
   );

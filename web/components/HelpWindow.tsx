@@ -18,27 +18,30 @@ export function HelpWindow({ onClose }: { onClose: () => void }) {
           <button aria-label="Close" onClick={onClose}></button>
         </div>
       </div>
-      <div className="window-body">
+      <div className="window-body max-w-[500px]">
         <h3 className="text-lg font-bold mt-3 mb-1">LivePaint v1.0</h3>
-        <p>
+        <p className="text-sm">
           LivePaint is the realtime drawing game from the future. Draw the
           prompt as quickly as you can.
         </p>
-        <p>
+        <p className="text-sm">
           An AI judge will declare the first player to accurately draw the
           prompt to be the winner.
         </p>
         <h2 className="text-sm font-bold mt-3 mb-1">Credits</h2>
-        <p>Made with ♥ &nbsp;at LiveKit.</p>
-        <p>
-          Source available on{" "}
+        <p className="text-sm">
+          This game is a demo of the{" "}
+          <a href="https://livekit.io/" target="_blank">
+            LiveKit Agents
+          </a>{" "}
+          framework, and its fully annotated source code is available on{" "}
           <a
             href="https://github.com/livekit-examples/livepaint"
             target="_blank"
           >
             GitHub
-          </a>
-          , Apache License 2.0.
+          </a>{" "}
+          under the Apache 2.0 license (use it however you&apos;d like!)
         </p>
       </div>
     </Window>

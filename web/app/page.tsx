@@ -3,7 +3,7 @@
 import { GameProvider, useGame } from "@/providers/GameProvider";
 import { PlayersList } from "@/components/PlayersList";
 import { ConnectionForm } from "@/components/ConnectionForm";
-import { UrlRoomNameProvider } from "@/providers/UrlRoomNameProvider";
+import { UrlRoomNameProvider, useUrlRoomName } from "@/providers/UrlRoomNameProvider";
 import { GameControls } from "@/components/GameControls";
 import { Canvas } from "@/components/Canvas";
 import { HelpWindow } from "@/components/HelpWindow";
@@ -38,6 +38,14 @@ function Inner() {
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [showCustomPromptModal, setShowCustomPromptModal] = useState(false);
   const prevGameStartedRef = useRef(false);
+
+  const { urlRoomName } = useUrlRoomName();
+
+  useEffect(() => {
+    if (urlRoomName && urlRoomName !== room?.name) {
+      disconnect();
+    }
+  }, [urlRoomName, room?.name, disconnect]);
 
   // Show the winner modal when the game ends
   useEffect(() => {

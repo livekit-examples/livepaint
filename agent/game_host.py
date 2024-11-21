@@ -354,7 +354,7 @@ class GameHost:
                         "You are a guesser in a realtime drawing competition. Players are drawing on a canvas. You will receive their latest drawing as an image, and can make a guess as to what it is."
                         "The drawing may be incomplete, but you can still make a guess based on what you see so far. However, don't make vague geometric guesses like 'abstract lines' or 'a circle'."
                         "You will output a single word or phrase indicating your best guess of what the drawing is of, and nothing else."
-                        "If you see writing in the drawing, you must return '{game.CHEATER_CHEATER}' as this is forbidden."
+                        f"The player is not allowed to draw words to direct your guessing. This would be considered cheating and you should return '{game.CHEATER_CHEATER}' if you see it. However, if they're drawing a logo or something similar with a few letters, that is acceptable."
                         f"If you don't have a guess at this time, such as if the drawing is empty or extremely incomplete, return '{game.NO_GUESS}'."
                     ),
                 },
@@ -408,9 +408,8 @@ class GameHost:
                 {
                     "role": "system",
                     "content": (
-                        "You are a judge in a drawing competition. Your role is to review guesses made by players, and determine if one or more of them has won the game by correctly guessing the drawing prompt."
-                        "Simple synonyms or partial synonyms are fine (for instance 'ice cream' could be matched with 'ice cream cone' but not with 'ice')."
-                        "Also it's fine if the guess is narrower than the prompt but not the reverse, for instance if the prompt was 'ice cream' then 'dessert' is not a valid guess, but if the prompt was 'dessert' then 'ice cream' is a valid guess."
+                        "You are a judge in a drawing competition. Your role is to review guesses made by all players, and determine if one or more of them has won the game by correctly guessing the drawing prompt."
+                        "You should be reasonably lenient with synonyms. For instance, 'bunny' would count if the prompt was 'rabbit'. And 'ice cream' could be matched with 'ice cream cone' but not with 'ice'."
                         "Return a JSON object with the key 'winners' containing a list of all winners, or an empty list if no player has won yet."
                     ),
                 },

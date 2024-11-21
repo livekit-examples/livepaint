@@ -43,6 +43,13 @@ export function HelpWindow({ onClose }: { onClose: () => void }) {
           </a>{" "}
           under the Apache 2.0 license (use it however you&apos;d like!)
         </p>
+        <p className="text-sm">
+          Special thanks to{" "}
+          <a href="https://jdan.github.io/98.css/" target="_blank">
+            98.css
+          </a>{" "}
+          for the classic look.
+        </p>
       </div>
     </Window>
   );

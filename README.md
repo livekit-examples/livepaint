@@ -1,14 +1,14 @@
 # LivePaint
 
-This is an example project demonstrating how to build a realtime data app using LiveKit.
+This LiveKit example project is a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by a realtime AI agent that oversees the whole game. 
 
-In this example, we build a realtime drawing game where players compete to complete a drawing prompt as fast as possible, while being judged by an AI agent that oversees the whole game. 
+It demonstrates the use of LiveKit's [realtime data messages](https://docs.livekit.io/home/client/data/messages), [room metadata](https://docs.livekit.io/home/client/data/room-metadata/), [RPC](https://docs.livekit.io/home/client/data/rpc/), [participant management](https://docs.livekit.io/home/server/managing-participants/), [token generation](https://docs.livekit.io/home/server/generating-tokens/), and [realtime audio chat](https://docs.livekit.io/home/client/tracks/) in a real-world app built on the LiveKit [JS SDK](https://github.com/livekit/client-sdk-js), [React Components](https://github.com/livekit/components-js), [Python agents SDK](https://github.com/livekit/agents), and [Python Server API](https://github.com/livekit/python-sdks).
 
-This example demonstrates the use of [realtime data messages](https://docs.livekit.io/home/client/data/messages), [room metadata](https://docs.livekit.io/home/client/data/room-metadata/), [RPC](https://docs.livekit.io/home/client/data/rpc/), [participant management](https://docs.livekit.io/home/server/managing-participants/), [token generation](https://docs.livekit.io/home/server/generating-tokens/), and [realtime audio chat](https://docs.livekit.io/home/client/tracks/) in a real-world app built on the LiveKit [JS SDK](https://github.com/livekit/client-sdk-js), [React Components](https://github.com/livekit/components-js), [Python agents SDK](https://github.com/livekit/agents), and [Python Server API](https://github.com/livekit/python-sdks).
-
-Try it live at [https://live-paint.vercel.app](https://live-paint.vercel.app)!
+Play live at [https://paint.livekit.io](https://paint.livekit.io)!
 
 ## Architecture
+
+This is a short overview of how this game was built. The entire codebase is also annotated with comments that go into more detail. The `agent` directory contains the code for the realtime agent (built on [LiveKit Agents](https://docs.livekit.io/agents)). The `web` directory contains the code for the game frontend (built on [Next.js](https://nextjs.org/) with [LiveKit React Components](https://github.com/livekit/components-js)).
 
 ### Rooms & Participants
 
@@ -58,37 +58,56 @@ The agent is responsible for judging each player's drawing. It runs a single loo
 
 Realtime chat is enabled within each room by [publishing the local microphone](https://docs.livekit.io/home/client/tracks/publish/) and [rendering the room audio](https://docs.livekit.io/reference/components/react/component/roomaudiorenderer/).
 
-## Ideas / What's Next?
+## Ideas & What's Next?
 
-If you'd like to learn to build with LiveKit, try to implement the following feature ideas or invent your own:
+Learn to build with LiveKit by adding one of the following features, or come up with your own!
 
 - Add a scoreboard that shows how many wins each player has racked up
     - We think [participant attributes](https://docs.livekit.io/home/client/data/participant-attributes/) is a great place to keep track of this
 - Have the AI agent make its guesses and announce winners with realtime audio as well as text
-    - We'd try using a [Text-To-Speech plugin](https://docs.livekit.io/agents/plugins/#text-to-speech-tts)
-    - Consider having the agent publish a different track to each participant, so they don't need to hear the guesses for everyone else in realtime
-- Add a room list on the front page that shows open rooms and lets you join one
-    - Try the [List Rooms](https://docs.livekit.io/home/server/managing-rooms/#list-rooms) Server API
+    - We'd try using a LiveKit [Text-To-Speech (TTS) plugin](https://docs.livekit.io/agents/plugins/#text-to-speech-tts)
+    - To make it perfect, have the agent [publish](https://docs.livekit.io/home/client/tracks/publish/) a different audio track to each participant so they can hear the guesses for everyone else in realtime
+- Add a room list on the front page that shows open rooms and lets you join any of them
+    - We'd use the [List Rooms](https://docs.livekit.io/home/server/managing-rooms/#list-rooms) Server API in a Next.js API route
 - Add support for multiple brush sizes and colors
-    - You'll probably want to extend the data format for `Line` to record brush size and color
-
+    - You'll need to extend the data format for `Line` to record brush size and color
 
 ## Development & Running Locally
 
-Run the agent:
+You'll need a LiveKit instance to run this project, either from [LiveKit Cloud](https://cloud.livekit.io) or [Self-hosted](https://docs.livekit.io/home/self-hosting/local/).
 
-```
+### Running the Agent
+
+First add `agent/.env` with LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL, and OPENAI_API_KEY.
+
+Then run the following commands to install dependencies:
+
+```shell
 cd agent
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+``
+
+Finally, boot the agent:
+
+```shell
 python main.py dev
 ```
 
-Run the site:
+### Running the Site
 
-```
+First add `web/.env.local` with LIVEKIT_API_KEY, LIVEKIT_API_SECRET, and LIVEKIT_URL.
+
+Then run the following commands to install dependencies:
+
+```shell
 cd web
 pnpm install
+```
+
+Finally, start the site:
+
+```shell
 pnpm dev
 ```

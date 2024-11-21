@@ -4,14 +4,20 @@ import { Line } from "@/lib/drawings";
 import { RemoteParticipant } from "livekit-client";
 import { useGame } from "@/providers/GameProvider";
 
+// This is similar to the `Canvas` component, but is not interactive
+// It's used to render the drawings of other players in the game
 export function PlayerTile({
   player,
   canvasSize,
+  strokeWidth,
 }: {
   player: RemoteParticipant;
   canvasSize: number;
+  strokeWidth: number;
 }) {
   const { drawings, guesses, gameState } = useGame();
+
+  // The winner and guesses are indexed by player identity (not name)
   const isWinner = useMemo(
     () => gameState.winners.includes(player.identity),
     [gameState.winners, player.identity],
@@ -46,13 +52,13 @@ export function PlayerTile({
           line.fromPoint.y * canvasSize,
         );
         ctx.lineTo(line.toPoint.x * canvasSize, line.toPoint.y * canvasSize);
-        ctx.lineWidth = 1;
+        ctx.lineWidth = strokeWidth;
         ctx.lineCap = "square";
         ctx.strokeStyle = "#000";
         ctx.stroke();
       });
     }
-  }, [drawing?.lines, canvasRef, canvasSize]);
+  }, [drawing?.lines, canvasRef, canvasSize, strokeWidth]);
   return (
     <fieldset className="w-full box-border">
       <legend className={`text-lg`}>

@@ -16,6 +16,7 @@ export const metadata: Metadata = {
         width: 1118,
         height: 630,
         type: "image/png",
+        alt: "LivePaint",
       },
     ],
     url: "https://paint.livekit.io",

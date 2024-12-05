@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://paint.livekit.io/og-image.png",
-        width: 1200,
+        width: 1118,
         height: 630,
         type: "image/png",
       },

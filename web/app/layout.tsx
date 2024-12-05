@@ -24,6 +24,13 @@ export default function RootLayout({
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:url" content="https://paint.livekit.io" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@livekit" />
+        <meta name="twitter:title" content="LivePaint" />
+        <meta
+          name="twitter:description"
+          content="A realtime AI drawing game powered by LiveKit"
+        />
+        <meta name="twitter:image" content="/og-image.png" />
         <title>LivePaint</title>
       </head>
       <body className="overflow-hidden bg-[#00807F]">{children}</body>

@@ -34,7 +34,7 @@ Drawings are stored as an unordered set of line segments, each represented by a 
 
 Drawing updates are published using realtime [data messages](https://docs.livekit.io/home/client/data/messages) with the topics `player.draw_line` and `player.clear_drawing`. Drawings are stored in unit coordinates, which each point between 0 and 1 to be size-agnostic. However, when sent as a data message each segment is serialized as four 16-bit integers (representing `x1`, `y1`, `x2`, `y2`) between 0 and 65535 to minimize the message size. Each player, and the agent, reconsitutes the full drawing from these messages.
 
-When a player joins an inprogress game, they retrieve the current drawing state from each player with [RPC](https://docs.livekit.io/home/client/data/rpc) by calling `player.get_drawing`.
+When a player joins an in-progress game, they retrieve the current drawing state from each player with [RPC](https://docs.livekit.io/home/client/data/rpc) by calling `player.get_drawing`.
 
 ### Game Control
 
@@ -87,7 +87,7 @@ cd agent
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-``
+```
 
 Finally, boot the agent:
 

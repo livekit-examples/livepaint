@@ -65,7 +65,7 @@ Learn to build with LiveKit by adding one of the following features, or come up 
 - Add a scoreboard that shows how many wins each player has racked up
     - We think [participant attributes](https://docs.livekit.io/home/client/data/participant-attributes/) is a great place to keep track of this
 - Have the AI agent make its guesses and announce winners with realtime audio as well as text
-    - We'd try using a LiveKit [Text-To-Speech (TTS) plugin](https://docs.livekit.io/agents/plugins/#text-to-speech-tts)
+    - We'd try using a LiveKit [Text-To-Speech (TTS) plugin](https://docs.livekit.io/agents/plugins/#text-to-speech-tts-)
     - To make it perfect, have the agent [publish](https://docs.livekit.io/home/client/tracks/publish/) a different audio track to each participant so they can hear the guesses for everyone else in realtime
 - Add a room list on the front page that shows open rooms and lets you join any of them
     - We'd use the [List Rooms](https://docs.livekit.io/home/server/managing-rooms/#list-rooms) Server API in a Next.js API route

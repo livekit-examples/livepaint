@@ -17,7 +17,7 @@
     "@livekit/components-styles": "^1.1.2",
     "livekit-client": "^2.6.0",
     "livekit-server-sdk": "^2.6.1",
-    "next": "14.2.10",
+    "next": "14.2.21",
     "react": "^18",
     "react-dom": "^18",
     "react-draggable": "^4.4.6"

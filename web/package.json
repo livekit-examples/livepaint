@@ -17,7 +17,7 @@
     "@livekit/components-styles": "^1.1.5",
     "livekit-client": "^2.11.1",
     "livekit-server-sdk": "^2.12.0",
-    "next": "14.2.35",
+    "next": "16.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.4.6"
@@ -27,7 +27,7 @@
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
     "eslint": "^8.57.1",
-    "eslint-config-next": "14.2.18",
+    "eslint-config-next": "16.1.1",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-unused-imports": "^3.2.0",

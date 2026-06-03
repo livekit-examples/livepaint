@@ -5,11 +5,12 @@ import json
 import random
 from typing import List
 
-import openai
 from livekit import agents, api, rtc
+from livekit.agents import inference
+from livekit.agents.llm import ChatContext, ImageContent
 
-from drawings import Line, PlayerDrawing
 import game
+from drawings import Line, PlayerDrawing
 
 
 # The main class for the game host agent. This instance will live for the duration of the Room
@@ -19,7 +20,12 @@ class GameHost:
     def __init__(self, ctx: agents.JobContext):
         self._ctx = ctx
         self._game_state = game.GameState()
-        self._openai_client = openai.AsyncOpenAI()
+        # We use LiveKit Inference for the vision and judging LLM calls.
+        # It's served through LiveKit Cloud and authenticates with the same
+        # LIVEKIT_API_KEY / LIVEKIT_API_SECRET as the rest of the app, so no
+        # separate model provider API key is required.
+        # See https://docs.livekit.io/agents/models/inference/ for more details
+        self._llm = inference.LLM(model="openai/gpt-4o-mini")
         self._lkapi = api.LiveKitAPI()
         self._drawings = {}
         self._guess_cache = game.GuessCache()
@@ -138,7 +144,7 @@ class GameHost:
         await self._publish_game_state()
         return json.dumps({"updated": True})
 
-    # This judging loop runs when a game is in progress, and uses OpenAI to make guesses and check for winners
+    # This judging loop runs when a game is in progress, and uses an LLM (via LiveKit Inference) to make guesses and check for winners
     async def _run_judge_loop(self, sleep_interval: int = 1):
         print("starting judge loop")
 
@@ -325,6 +331,26 @@ class GameHost:
             topic="host.guess",
         )
 
+    # Runs a single, non-streaming chat completion against LiveKit Inference and
+    # returns the full text response. `chat()` always returns a streamed response,
+    # so we accumulate the content deltas into a single string for these one-off calls.
+    # See https://docs.livekit.io/agents/models/llm/ for more details
+    async def _llm_complete(self, chat_ctx: ChatContext, **extra_kwargs) -> str:
+        content = ""
+        # A low temperature keeps guesses and judgements fairly deterministic.
+        # Any extra kwargs (e.g. response_format) are passed through to the
+        # underlying chat completions request.
+        stream = self._llm.chat(
+            chat_ctx=chat_ctx, extra_kwargs={"temperature": 0.5, **extra_kwargs}
+        )
+        try:
+            async for chunk in stream:
+                if chunk.delta and chunk.delta.content:
+                    content += chunk.delta.content
+        finally:
+            await stream.aclose()
+        return content
+
     # We use GPT-4o-mini with vision to make guesses based on the current state of a player's drawing.
     # Each drawing is judged independently and context-free (i.e. the LLM has no knowledge of the current prompt nor other players' drawings)
     # to control for context pollution that would degrade its guess quality
@@ -343,38 +369,32 @@ class GameHost:
             drawing.get_image().save(bytes_io, format="PNG")
             encodedImg = base64.b64encode(bytes_io.getvalue()).decode("utf-8")
 
-        # We're using OpenAI's chat completions API via their [official Python SDK](https://github.com/openai/openai-python), as we aren't doing anything particularly complex here
-        # For applications that require realtime audio streaming and conversation, you should use the [LiveKit Agents OpenAI Plugin](https://github.com/livekit/agents/tree/main/livekit-plugins/livekit-plugins-openai) instead
-        response = await self._openai_client.chat.completions.create(
-            temperature=0.5,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a guesser in a realtime drawing competition. Players are drawing on a canvas. You will receive their latest drawing as an image, and can make a guess as to what it is."
-                        "The drawing may be incomplete, but you can still make a guess based on what you see so far. However, don't make vague geometric guesses like 'abstract lines' or 'a circle'."
-                        "You will output a single word or phrase indicating your best guess of what the drawing is of, and nothing else."
-                        f"The player is not allowed to draw words to direct your guessing. This would be considered cheating and you should return '{game.CHEATER_CHEATER}' if you see it. However, if they're drawing a logo or something similar with a few letters, that is acceptable."
-                        f"If you don't have a guess at this time, such as if the drawing is empty or extremely incomplete, return '{game.NO_GUESS}'."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{encodedImg}",
-                                "detail": "low",
-                            },
-                        },
-                        {"type": "text", "text": "Make your best guess on this image."},
-                    ],
-                },
-            ],
-            model="gpt-4o-mini",
+        # We build a one-off chat context with the drawing supplied as an image input.
+        # The image is passed as a base64 data URL; "low" inference detail is plenty for
+        # our 512x512 drawing and keeps token usage (and cost) down.
+        # See https://docs.livekit.io/agents/multimodality/vision/images/ for more details
+        chat_ctx = ChatContext.empty()
+        chat_ctx.add_message(
+            role="system",
+            content=(
+                "You are a guesser in a realtime drawing competition. Players are drawing on a canvas. You will receive their latest drawing as an image, and can make a guess as to what it is."
+                "The drawing may be incomplete, but you can still make a guess based on what you see so far. However, don't make vague geometric guesses like 'abstract lines' or 'a circle'."
+                "You will output a single word or phrase indicating your best guess of what the drawing is of, and nothing else."
+                f"The player is not allowed to draw words to direct your guessing. This would be considered cheating and you should return '{game.CHEATER_CHEATER}' if you see it. However, if they're drawing a logo or something similar with a few letters, that is acceptable."
+                f"If you don't have a guess at this time, such as if the drawing is empty or extremely incomplete, return '{game.NO_GUESS}'."
+            ),
         )
-        guess = response.choices[0].message.content
+        chat_ctx.add_message(
+            role="user",
+            content=[
+                "Make your best guess on this image.",
+                ImageContent(
+                    image=f"data:image/png;base64,{encodedImg}",
+                    inference_detail="low",
+                ),
+            ],
+        )
+        guess = await self._llm_complete(chat_ctx)
         print("Made new guess (%s) for player %s" % (guess, player_identity))
         self._guess_cache.set(hash, guess)
 
@@ -400,37 +420,32 @@ class GameHost:
     # Winners can be checked in bulk as a single LLM call, and its possible for more than one player to win
     # We use an LLM for this step rather than a string match, because it's more flexible with synonyms and phrasing
     async def _check_winners(self) -> List[str]:
-        # As above, we're using OpenAI's chat completions API via their [official Python SDK](https://github.com/openai/openai-python), as we aren't doing anything particularly complex here
-        # For applications that require realtime audio streaming and conversation, you should use the [LiveKit Agents OpenAI Plugin](https://github.com/livekit/agents/tree/main/livekit-plugins/livekit-plugins-openai) instead
-        response = await self._openai_client.chat.completions.create(
-            temperature=0.5,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a judge in a drawing competition. Your role is to review guesses made by all players, and determine if one or more of them has won the game by correctly guessing the drawing prompt."
-                        "You should be reasonably lenient with synonyms. For instance, 'bunny' would count if the prompt was 'rabbit'. And 'ice cream' could be matched with 'ice cream cone' but not with 'ice'."
-                        "Return a JSON object with the key 'winners' containing a list of all winners, or an empty list if no player has won yet."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": "\n".join(
-                        [
-                            'Player "%s" guessed "%s"' % (player_identity, guess)
-                            for player_identity, guess in self._last_guesses.items()
-                            if guess != game.NO_GUESS
-                        ]
-                    )
-                    + "\n\n"
-                    + 'The current game prompt is: "%s". Please return only the list of winners.'
-                    % self._game_state.prompt,
-                },
-            ],
-            model="gpt-4o-mini",
-            response_format={"type": "json_object"},
+        # We request a JSON object response so we can reliably parse the winners list.
+        chat_ctx = ChatContext.empty()
+        chat_ctx.add_message(
+            role="system",
+            content=(
+                "You are a judge in a drawing competition. Your role is to review guesses made by all players, and determine if one or more of them has won the game by correctly guessing the drawing prompt."
+                "You should be reasonably lenient with synonyms. For instance, 'bunny' would count if the prompt was 'rabbit'. And 'ice cream' could be matched with 'ice cream cone' but not with 'ice'."
+                "Return a JSON object with the key 'winners' containing a list of all winners, or an empty list if no player has won yet."
+            ),
         )
-        text = response.choices[0].message.content
+        chat_ctx.add_message(
+            role="user",
+            content="\n".join(
+                [
+                    'Player "%s" guessed "%s"' % (player_identity, guess)
+                    for player_identity, guess in self._last_guesses.items()
+                    if guess != game.NO_GUESS
+                ]
+            )
+            + "\n\n"
+            + 'The current game prompt is: "%s". Please return only the list of winners.'
+            % self._game_state.prompt,
+        )
+        text = await self._llm_complete(
+            chat_ctx, response_format={"type": "json_object"}
+        )
         print("text: %s" % text)
         winners = json.loads(text).get("winners", [])
 

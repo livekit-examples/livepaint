@@ -49,8 +49,8 @@ Players have access to a simple API for game control, built on top of [RPC](http
 The agent is responsible for judging each player's drawing. It runs a single loop that wakes up every few seconds. On a judgement loop, the agent will:
 
 1. Convert each player's drawing from a set of line segments to a 512x512 PNG image.
-2. Send each drawing to a GPT-4o chat which is configured to "guess" what the drawing is meant to be. (Note: The actual target "prompt" is not included in this request, to avoid polluting its context.)
-3. Collects all guesses and sends them to a different GPT-4o chat which is configured to return a list of all players whose guesses are "correct" (i.e. similar enough to the target prompt).
+2. Send each drawing to a vision LLM (via [LiveKit Inference](https://docs.livekit.io/agents/models/inference/)) which is configured to "guess" what the drawing is meant to be. (Note: The actual target "prompt" is not included in this request, to avoid polluting its context.)
+3. Collects all guesses and sends them to a different LLM chat which is configured to return a list of all players whose guesses are "correct" (i.e. similar enough to the target prompt).
 4. All guesses are published as data messages to all players, using the topic `host.guess`.
 5. If any winners were found, the agent updates the game state to end the game and list the winners. Otherwise it sleeps for a few seconds and checks again.
 
@@ -78,21 +78,19 @@ You'll need a LiveKit instance to run this project, either from [LiveKit Cloud](
 
 ### Running the Agent
 
-First add `agent/.env` with LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL, and OPENAI_API_KEY.
+First add `agent/.env` with LIVEKIT_API_KEY, LIVEKIT_API_SECRET, and LIVEKIT_URL. The agent uses [LiveKit Inference](https://docs.livekit.io/agents/models/inference/) for its vision and judging LLM calls, so no separate model provider API key is required.
 
-Then run the following commands to install dependencies:
+Dependencies are managed with [uv](https://docs.astral.sh/uv/). Install them with:
 
 ```shell
 cd agent
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+uv sync
 ```
 
 Finally, boot the agent:
 
 ```shell
-python main.py dev
+uv run python main.py dev
 ```
 
 ### Running the Site

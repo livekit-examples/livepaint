@@ -1,6 +1,6 @@
-from typing import Literal, List
 import json
 from collections import OrderedDict
+from typing import List, Literal
 
 DifficultyLevel = Literal["easy", "medium", "hard"]
 

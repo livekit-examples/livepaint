@@ -1,5 +1,12 @@
-@tailwind components;
-@tailwind utilities;
+/*
+ * Tailwind v4 imports. We deliberately import only the theme and utilities
+ * layers (not "base"/preflight) so Tailwind's CSS reset doesn't override the
+ * retro styling provided by 98.css. This mirrors the previous v3 setup, which
+ * used `@tailwind components; @tailwind utilities;` without `@tailwind base`.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 body {
   margin: 0;

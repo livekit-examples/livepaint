@@ -1,6 +1,0 @@
-livekit-agents~=1.0
-asyncio
-python-dotenv
-livekit
-pillow
-openai

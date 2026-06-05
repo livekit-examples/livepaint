@@ -1,5 +1,6 @@
 .zed
 venv
+.venv
 node_modules
 .next
 python-dotenv
@@ -8,8 +9,3 @@ node_modules
 .env.local
 __pycache__
 .DS_Store
-
-
-# Ignore agent deployment files
-agent/Dockerfile
-agent/fly.toml

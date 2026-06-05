@@ -1,0 +1,4 @@
+# Build output and dependencies
+.next/
+node_modules/
+pnpm-lock.yaml

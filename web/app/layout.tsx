@@ -1,7 +1,7 @@
 import "@livekit/components-styles";
 import "./globals.css";
 import "98.css";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: "LivePaint",
@@ -21,7 +21,14 @@ export const metadata: Metadata = {
     ],
     url: "https://paint.livekit.io",
   },
-  viewport: "width=device-width, initial-scale=1, shrink-to-fit=no",
+};
+
+// As of Next.js 14, viewport and themeColor must be declared in a separate
+// `viewport` export rather than inside `metadata`.
+// See https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
   themeColor: "#000000",
 };
 

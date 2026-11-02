@@ -7,7 +7,7 @@ requires-python = ">=3.10"
 dependencies = [
     "livekit-agents~=1.5",
     "livekit-api~=1.1",
-    "pillow~=12.0",
+    "pillow~=13.0",
     "python-dotenv~=1.1",
 ]
 
